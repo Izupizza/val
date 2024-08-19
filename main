@@ -1,3 +1,11 @@
+#!/bin/bash
+#FLUSH ALL
+iptables -F INPUT
+iptables -F OUTPUT
+iptables -F FORWARD
+iptables -t nat -F PREROUTING
+iptables -t nat -F POSTROUTING
+
 #exercice 5
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
@@ -8,20 +16,23 @@ iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 #exercice 2
-iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o enp0s3 -j SNAT --to-source 192.168.0.9
+iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o enp0s3 -j SNAT --to-source (carrte nat)
 iptables -A FORWARD -s 192.168.1.0/24 -o enp0s3 -p tcp --dport 53 -j ACCEPT
 iptables -A FORWARD -s 192.168.1.0/24 -o enp0s3 -p udp --dport 53 -j ACCEPT
 iptables -A FORWARD -s 192.168.1.0/24 -o enp0s3 -p tcp --dport 443 -j ACCEPT
 
 #exercice 3
-iptables -A FORWARD -s 192.168.1.0/24 -o enp0s3 -p tcp --dport 80 -j ACCEPT
+iptables -A FORWARD -s 192.168.1.0/24 -o enp0s9 -p tcp --dport 80 -j ACCEPT
 
 #dépassement
-iptables -A INPUT -s 172.16.0.0/24 -d 192.168.1.254,192.168.0.9,172.16.0.254 -p icmp -j ACCEPT
+iptables -A INPUT -s 172.16.0.0/24 -d 192.168.1.1,192.168.0.9,172.16.0.1 -p icmp -j ACCEPT
 iptables -A FORWARD -i enp0s3 -o enp0s9 -p tcp --dport 80 -j ACCEPT
-iptables -t nat -A PREROUTING -dst 192.168.0.9 -p tcp --dport 80 -j DNAT --to-destination 172.16.0.254
+iptables -t nat -A PREROUTING -dst (carte nat) -p tcp --dport 80 -j DNAT --to-destination 172.16.0.1
 
 #exercice 1
 iptables -A INPUT -j REJECT
 iptables -A OUTPUT -j REJECT
 iptables -A FORWARD -j REJECT
+
+
+
